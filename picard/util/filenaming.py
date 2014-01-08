@@ -25,6 +25,9 @@ import unicodedata
 from picard.util import _io_encoding, decode_filename, encode_filename
 
 
+SHORTEN_BYTES, SHORTEN_UTF16, SHORTEN_UTF16_NFD = 0, 1, 2
+
+
 def _get_utf16_length(text):
     """Returns the number of code points used by a unicode object in its
     UTF-16 representation.
@@ -78,9 +81,11 @@ def _shorten_to_utf16_nfd_length(text, length):
         pass
     return unicodedata.normalize('NFC', newtext)
 
+
 _re_utf8 = re.compile(r'^utf([-_]?8)$', re.IGNORECASE)
 def _shorten_to_bytes_length(text, length):
-    """Truncates a unicode object to the given number of bytes it would take
+    """
+    Truncates a unicode object to the given number of bytes it would take
     when encoded in the "filesystem encoding".
     """
     assert isinstance(text, unicode), "This function only works on unicode"
@@ -112,10 +117,9 @@ def _shorten_to_bytes_length(text, length):
     return u""
 
 
-SHORTEN_BYTES, SHORTEN_UTF16, SHORTEN_UTF16_NFD = 0, 1, 2
 def shorten_filename(filename, length, mode):
-    """Truncates a filename to the given number of thingies,
-    as implied by `mode`.
+    """
+    Truncates a filename to the given number of thingies, as implied by `mode`.
     """
     if isinstance(filename, str):
         return filename[:length]
@@ -158,9 +162,9 @@ def _make_win_short_filename(relpath, reserved=0):
     """Shorten a relative file path according to WinAPI quirks.
 
     relpath: The file's path.
-    reserved: Number of characters reserved for the parent path to be joined with,
-              e.g. 3 if it will be joined with "X:\", respectively 5 for "X:\y\".
-              (note the inclusion of the final backslash)
+    reserved: Number of characters reserved for the parent path to be joined
+        with, e.g. 3 if it will be joined with "X:\", respectively 5 for "X:\y\"
+        (note the inclusion of the final backslash).
     """
     # See:
     # http://msdn.microsoft.com/en-us/library/windows/desktop/aa365247(v=vs.85).aspx
@@ -190,7 +194,8 @@ def _make_win_short_filename(relpath, reserved=0):
     # what if dirpath is already the right size?
     dplen = xlength(dirpath)
     if dplen <= remaining:
-        filename_max = MAX_FILEPATH_LEN - (reserved + dplen + 1)  # the final separator
+        filename_max = MAX_FILEPATH_LEN - (reserved + dplen + 1)
+        #                                 the final separator ^
         filename = shorten(filename, filename_max)
         return os.path.join(dirpath, filename)
 
@@ -223,7 +228,10 @@ def _make_win_short_filename(relpath, reserved=0):
 
         # do we have at least 1 char for longdirs?
         if remaining > shortdirchars + len(dirnames) - len(shortdirnames):
-            ratio = float(totalchars - shortdirchars) / (remaining - shortdirchars)
+            ratio = (
+                float(totalchars - shortdirchars) /
+                (remaining - shortdirchars)
+            )
             for i, dn in enumerate(dirnames):
                 if len(dn) > average:
                     dirnames[i] = _shorten_to_utf16_ratio(dn, ratio)
@@ -238,7 +246,7 @@ def _make_win_short_filename(relpath, reserved=0):
         recovered = remaining - sum(map(xlength, dirnames))
         # so how much do we have left for the filename?
         filename_max = MAX_FILEPATH_LEN - MAX_DIRPATH_LEN - 1 + recovered
-        #                                                   ^ the final separator
+        #                               the final separator ^
 
         # and don't forget to cache
         computed[(dirpath, reserved)] = (finaldirpath, filename_max)
@@ -263,6 +271,7 @@ def _get_mount_point(target):
             mount = os.path.dirname(mount)
         mounts[target] = mount
     return mount
+
 
 # NOTE: this could be merged with the function above, and get all needed info
 # in a single call, returning the filesystem type as well. (but python's
@@ -292,7 +301,7 @@ def make_short_filename(basedir, relpath, win_compat=False, relative_to=""):
     relpath: File path, relative from the base directory.
     win_compat: Windows is quirky.
     relative_to: An ancestor directory of basedir, against which win_compat
-                 will be applied.
+        will be applied.
     """
     # only deal with absolute paths. it saves a lot of grief,
     # and is the right thing to do, even for renames.
@@ -301,11 +310,12 @@ def make_short_filename(basedir, relpath, win_compat=False, relative_to=""):
     relpath = os.path.normpath(relpath)
     if win_compat and relative_to:
         relative_to = os.path.abspath(relative_to)
-        assert basedir.startswith(relative_to) and \
-               basedir.split(relative_to)[1][:1] in (os.path.sep, ''), \
-               "`relative_to` must be an ancestor of `basedir`"
+        assert (basedir.startswith(relative_to) and
+                basedir.split(relative_to)[1][:1] in (os.path.sep, '')), \
+            "`relative_to` must be an ancestor of `basedir`"
     # always strip the relpath parts
-    relpath = os.path.join(*[part.strip() for part in relpath.split(os.path.sep)])
+    relpath = os.path.join(
+        *[part.strip() for part in relpath.split(os.path.sep)])
     # if we're on windows, delegate the work to a windows-specific function
     if sys.platform == "win32":
         reserved = len(basedir)
