@@ -64,8 +64,6 @@ from picard.plugin import PluginManager
 from picard.acoustidmanager import AcoustIDManager
 from picard.config_upgrade import upgrade_config
 from picard.util import (
-    decode_filename,
-    encode_filename,
     thread,
     mbid_validate,
     check_io_encoding,
@@ -211,9 +209,9 @@ class Tagger(QtGui.QApplication):
             files = []
             for file in self._args:
                 if os.path.isdir(file):
-                    self.add_directory(decode_filename(file))
+                    self.add_directory(file)
                 else:
-                    files.append(decode_filename(file))
+                    files.append(file)
             if files:
                 self.add_files(files)
             del self._args
@@ -462,7 +460,7 @@ class Tagger(QtGui.QApplication):
         disc = Disc()
         self.set_wait_cursor()
         thread.run_task(
-            partial(disc.read, encode_filename(device)),
+            partial(disc.read, device),
             partial(self._lookup_disc, disc))
 
     @property

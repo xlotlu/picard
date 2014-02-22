@@ -34,7 +34,7 @@ from picard import config, log
 from picard.file import File
 from picard.formats.id3 import image_type_from_id3_num, image_type_as_id3_num
 from picard.metadata import Metadata, save_this_image_to_tags
-from picard.util import encode_filename, sanitize_date
+from picard.util import sanitize_date
 
 
 class VCommentFile(File):
@@ -50,7 +50,7 @@ class VCommentFile(File):
 
     def _load(self, filename):
         log.debug("Loading file %r", filename)
-        file = self._File(encode_filename(filename))
+        file = self._File(filename)
         file.tags = file.tags or {}
         metadata = Metadata()
         for origname, values in file.tags.items():
@@ -127,7 +127,7 @@ class VCommentFile(File):
     def _save(self, filename, metadata):
         """Save metadata to the file."""
         log.debug("Saving file %r", filename)
-        file = self._File(encode_filename(filename))
+        file = self._File(filename)
         if file.tags is None:
             file.add_tags()
         if config.setting["clear_existing_tags"]:

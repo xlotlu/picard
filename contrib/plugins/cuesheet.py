@@ -82,7 +82,7 @@ class Cuesheet(object):
         self.tracks = []
 
     def read(self):
-        f = open(encode_filename(self.filename))
+        f = open(self.filename)
         self.parse(f.readlines())
         f.close()
 

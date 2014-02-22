@@ -26,7 +26,7 @@ import mutagenext.tak
 from picard import config, log
 from picard.file import File
 from picard.metadata import Metadata, save_this_image_to_tags
-from picard.util import encode_filename, sanitize_date, mimetype
+from picard.util import sanitize_date, mimetype
 from os.path import isfile
 
 
@@ -55,7 +55,7 @@ class APEv2File(File):
 
     def _load(self, filename):
         log.debug("Loading file %r", filename)
-        file = self._File(encode_filename(filename))
+        file = self._File(filename)
         metadata = Metadata()
         if file.tags:
             for origname, values in file.tags.items():
@@ -103,7 +103,7 @@ class APEv2File(File):
         """Save metadata to the file."""
         log.debug("Saving file %r", filename)
         try:
-            tags = mutagen.apev2.APEv2(encode_filename(filename))
+            tags = mutagen.apev2.APEv2(filename)
         except mutagen.apev2.APENoHeaderError:
             tags = mutagen.apev2.APEv2()
         if config.setting["clear_existing_tags"]:
@@ -154,7 +154,7 @@ class APEv2File(File):
                 tags['Cover Art (Front)'] = mutagen.apev2.APEValue(cover_filename + '\0' + image["data"], mutagen.apev2.BINARY)
                 break  # can't save more than one item with the same name
                        # (mp3tags does this, but it's against the specs)
-        tags.save(encode_filename(filename))
+        tags.save(filename)
 
 
 class MusepackFile(APEv2File):

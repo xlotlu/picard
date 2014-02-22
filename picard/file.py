@@ -160,12 +160,11 @@ class File(QtCore.QObject, Item):
         """Save the metadata."""
         new_filename = old_filename
         if not config.setting["dont_write_tags"]:
-            encoded_old_filename = encode_filename(old_filename)
-            info = os.stat(encoded_old_filename)
+            info = os.stat(old_filename)
             self._save(old_filename, metadata)
             if config.setting["preserve_timestamps"]:
                 try:
-                    os.utime(encoded_old_filename, (info.st_atime, info.st_mtime))
+                    os.utime(old_filename, (info.st_atime, info.st_mtime))
                 except OSError:
                     log.warning("Couldn't preserve timestamp for %r", old_filename)
         # Rename files
@@ -176,7 +175,7 @@ class File(QtCore.QObject, Item):
             self._move_additional_files(old_filename, new_filename)
         # Delete empty directories
         if config.setting["delete_empty_dirs"]:
-            dirname = encode_filename(os.path.dirname(old_filename))
+            dirname = os.path.dirname(old_filename)
             try:
                 self._rmdir(dirname)
                 head, tail = os.path.split(dirname)
@@ -371,7 +370,7 @@ class File(QtCore.QObject, Item):
 
     def _move_additional_files(self, old_filename, new_filename):
         """Move extra files, like playlists..."""
-        old_path = encode_filename(os.path.dirname(old_filename))
+        old_path = os.path.dirname(old_filename)
         new_path = encode_filename(os.path.dirname(new_filename))
         patterns = encode_filename(config.setting["move_additional_files_pattern"])
         patterns = filter(bool, [p.strip() for p in patterns.split()])

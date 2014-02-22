@@ -15,7 +15,6 @@ import struct
 from PyQt4 import QtCore
 from mutagen import mp4
 from picard.file import File
-from picard.util import encode_filename
 from picard.ui.itemviews import BaseAction, register_file_action
 
 
@@ -47,7 +46,7 @@ class FixMp4Meta(BaseAction):
     def callback(self, objs):
         files = [o for o in objs if isinstance(o, File)]
         for file in files:
-            if self.fix(encode_filename(file.filename)):
+            if self.fix(file.filename):
                 self.log.info("fix_mp4_meta: %s - Fixed", file.filename)
             else:
                 self.log.info("fix_mp4_meta: %s - Not needed", file.filename)

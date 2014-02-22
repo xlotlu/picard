@@ -21,7 +21,6 @@ from mutagen.mp4 import MP4, MP4Cover
 from picard import config, log
 from picard.file import File
 from picard.metadata import Metadata, save_this_image_to_tags
-from picard.util import encode_filename
 
 
 class MP4File(File):
@@ -108,7 +107,7 @@ class MP4File(File):
 
     def _load(self, filename):
         log.debug("Loading file %r", filename)
-        file = MP4(encode_filename(filename))
+        file = MP4(filename)
         if file.tags is None:
             file.add_tags()
 
@@ -149,7 +148,7 @@ class MP4File(File):
 
     def _save(self, filename, metadata):
         log.debug("Saving file %r", filename)
-        file = MP4(encode_filename(self.filename))
+        file = MP4(self.filename)
         if file.tags is None:
             file.add_tags()
 

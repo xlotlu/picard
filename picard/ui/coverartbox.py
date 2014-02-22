@@ -24,7 +24,7 @@ from picard.album import Album
 from picard.track import Track
 from picard.file import File
 from picard.metadata import is_front_image
-from picard.util import webbrowser2, encode_filename
+from picard.util import webbrowser2
 
 
 class ActiveLabel(QtGui.QLabel):
@@ -156,7 +156,7 @@ class CoverArtBox(QtGui.QGroupBox):
                 self.on_remote_image_fetched, xml=False,
                 priority=True, important=True)
         elif url.scheme() == 'file':
-            path = encode_filename(unicode(url.toLocalFile()))
+            path = url.toLocalFile()
             if os.path.exists(path):
                 f = open(path, 'rb')
                 mime = 'image/png' if path.lower().endswith('.png') else 'image/jpeg'

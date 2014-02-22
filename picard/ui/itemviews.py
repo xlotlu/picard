@@ -26,7 +26,7 @@ from picard.album import Album, NatAlbum
 from picard.cluster import Cluster, ClusterList, UnmatchedFiles
 from picard.file import File
 from picard.track import Track, NonAlbumTrack
-from picard.util import encode_filename, icontheme
+from picard.util import icontheme
 from picard.plugin import ExtensionPoint
 from picard.ui.ratingwidget import RatingWidget
 from picard.ui.collectionmenu import CollectionMenu
@@ -428,7 +428,7 @@ class BaseTreeView(QtGui.QTreeWidget):
                 file = BaseTreeView.tagger.files.get(filename)
                 if file:
                     files.append(file)
-                elif os.path.isdir(encode_filename(filename)):
+                elif os.path.isdir(filename):
                     BaseTreeView.tagger.add_directory(filename)
                 else:
                     new_files.append(filename)

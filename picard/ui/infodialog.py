@@ -19,7 +19,7 @@
 
 import os.path
 from PyQt4 import QtGui, QtCore
-from picard.util import format_time, encode_filename, bytes2human
+from picard.util import format_time, bytes2human
 from picard.ui.ui_infodialog import Ui_InfoDialog
 
 
@@ -80,7 +80,7 @@ class FileInfoDialog(InfoDialog):
         if '~format' in file.orig_metadata:
             info.append((_('Format:'), file.orig_metadata['~format']))
         try:
-            size = os.path.getsize(encode_filename(file.filename))
+            size = os.path.getsize(file.filename)
             sizestr = "%s (%s)" % (bytes2human.decimal(size), bytes2human.binary(size))
             info.append((_('Size:'), sizestr))
         except:

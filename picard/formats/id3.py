@@ -26,7 +26,7 @@ from picard import config, log
 from picard.metadata import Metadata, save_this_image_to_tags, MULTI_VALUED_JOINER
 from picard.file import File
 from picard.formats.mutagenext import compatid3
-from picard.util import encode_filename, sanitize_date
+from picard.util import sanitize_date
 from urlparse import urlparse
 
 
@@ -178,7 +178,7 @@ class ID3File(File):
 
     def _load(self, filename):
         log.debug("Loading file %r", filename)
-        file = self._File(encode_filename(filename), ID3=compatid3.CompatID3)
+        file = self._File(filename, ID3=compatid3.CompatID3)
         tags = file.tags or {}
         # upgrade custom 2.3 frames to 2.4
         for old, new in self.__upgrade.items():
@@ -271,7 +271,7 @@ class ID3File(File):
         """Save metadata to the file."""
         log.debug("Saving file %r", filename)
         try:
-            tags = compatid3.CompatID3(encode_filename(filename))
+            tags = compatid3.CompatID3(filename)
         except mutagen.id3.ID3NoHeaderError:
             tags = compatid3.CompatID3()
 
@@ -404,14 +404,14 @@ class ID3File(File):
 
         if config.setting['write_id3v23']:
             tags.update_to_v23(join_with=config.setting['id3v23_join_with'])
-            tags.save(encode_filename(filename), v2=3, v1=v1)
+            tags.save(filename, v2=3, v1=v1)
         else:
             tags.update_to_v24()
-            tags.save(encode_filename(filename), v2=4, v1=v1)
+            tags.save(filename, v2=4, v1=v1)
 
         if self._IsMP3 and config.setting["remove_ape_from_mp3"]:
             try:
-                mutagen.apev2.delete(encode_filename(filename))
+                mutagen.apev2.delete(filename)
             except:
                 pass
 

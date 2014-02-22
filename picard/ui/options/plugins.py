@@ -23,7 +23,7 @@ import sys
 from PyQt4 import QtCore, QtGui
 from picard import config
 from picard.const import USER_PLUGIN_DIR
-from picard.util import encode_filename, webbrowser2
+from picard.util import webbrowser2
 from picard.ui.options import OptionsPage, register_options_page
 from picard.ui.ui_options_plugins import Ui_PluginsOptionsPage
 
@@ -136,7 +136,6 @@ class PluginsOptionsPage(OptionsPage):
                 self.install_plugin(path)
 
     def install_plugin(self, path):
-        path = encode_filename(path)
         file = os.path.basename(path)
         dest = os.path.join(USER_PLUGIN_DIR, file)
         if os.path.exists(dest):

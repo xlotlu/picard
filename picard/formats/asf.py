@@ -20,7 +20,6 @@
 from picard import config, log
 from picard.file import File
 from picard.formats.id3 import image_type_from_id3_num, image_type_as_id3_num
-from picard.util import encode_filename
 from picard.metadata import Metadata, save_this_image_to_tags
 from mutagen.asf import ASF, ASFByteArrayAttribute
 import struct
@@ -133,7 +132,7 @@ class ASFFile(File):
 
     def _load(self, filename):
         log.debug("Loading file %r", filename)
-        file = ASF(encode_filename(filename))
+        file = ASF(filename)
         metadata = Metadata()
         for name, values in file.tags.items():
             if name == 'WM/Picture':
@@ -159,7 +158,7 @@ class ASFFile(File):
 
     def _save(self, filename, metadata):
         log.debug("Saving file %r", filename)
-        file = ASF(encode_filename(filename))
+        file = ASF(filename)
 
         if config.setting['clear_existing_tags']:
             file.tags.clear()
